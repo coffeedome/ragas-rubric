@@ -1,0 +1,760 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Banking LLM Risk & RAGAS Evaluation Rubric</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            max-width: 1400px;
+            width: 100%;
+        }
+        
+        h1 {
+            text-align: center;
+            color: #2d3748;
+            margin-bottom: 25px;
+            font-size: 1.8rem;
+            font-weight: 700;
+        }
+        
+        .matrix {
+            display: grid;
+            grid-template-columns: 140px 1fr 1fr;
+            grid-template-rows: 90px 1fr 1fr;
+            gap: 3px;
+            background: #e2e8f0;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+        }
+        
+        .cell {
+            background: white;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            position: relative;
+            transition: transform 0.2s ease;
+            overflow-y: auto;
+        }
+        
+        .cell:hover {
+            transform: scale(1.005);
+            z-index: 1;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #4299e1, #3182ce);
+            color: white;
+            font-weight: 700;
+            text-align: center;
+            font-size: 0.95rem;
+            justify-content: center;
+        }
+        
+        .axis-label {
+            background: linear-gradient(135deg, #48bb78, #38a169);
+            color: white;
+            font-weight: 600;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.85rem;
+        }
+        
+        .content {
+            background: white;
+        }
+        
+        .risk-level {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 15px;
+            font-weight: 600;
+            font-size: 0.75rem;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+        
+        .risk-high {
+            background: #fed7d7;
+            color: #c53030;
+            border: 2px solid #fc8181;
+        }
+        
+        .risk-medium {
+            background: #feebc8;
+            color: #dd6b20;
+            border: 2px solid #f6ad55;
+        }
+        
+        .risk-low {
+            background: #c6f6d5;
+            color: #2f855a;
+            border: 2px solid #68d391;
+        }
+        
+        .risk-critical {
+            background: #fed7d7;
+            color: #742a2a;
+            border: 2px solid #e53e3e;
+        }
+        
+        .section-title {
+            font-weight: 700;
+            color: #2d3748;
+            margin-bottom: 6px;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+        
+        .eval-list {
+            margin: 6px 0;
+            padding-left: 12px;
+            font-size: 0.75rem;
+            line-height: 1.3;
+        }
+        
+        .eval-list li {
+            margin-bottom: 2px;
+            color: #4a5568;
+        }
+        
+        .ragas-metrics {
+            background: #f7fafc;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 8px;
+            margin: 8px 0;
+        }
+        
+        .ragas-title {
+            font-weight: 700;
+            color: #553c9a;
+            margin-bottom: 6px;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+        
+        .metric-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 3px;
+            font-size: 0.75rem;
+        }
+        
+        .metric-name {
+            color: #553c9a;
+            font-weight: 600;
+        }
+        
+        .metric-threshold {
+            color: #e53e3e;
+            font-weight: 600;
+            font-size: 0.7rem;
+        }
+        
+        .monitoring-freq {
+            background: #edf2f7;
+            padding: 6px 10px;
+            border-radius: 6px;
+            margin-top: 8px;
+            font-size: 0.75rem;
+            color: #2d3748;
+            font-weight: 600;
+        }
+        
+        .corner {
+            background: linear-gradient(135deg, #ed8936, #dd6b20);
+        }
+        
+        .use-case {
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 6px;
+            font-size: 0.85rem;
+        }
+        
+        .additional-metrics {
+            background: #fff5f5;
+            border: 1px solid #fed7d7;
+            border-radius: 6px;
+            padding: 6px;
+            margin-top: 6px;
+        }
+        
+        .additional-title {
+            font-weight: 600;
+            color: #c53030;
+            font-size: 0.75rem;
+            margin-bottom: 4px;
+        }
+        
+        /* Legend Styles */
+        .legend-container {
+            background: rgba(255, 255, 255, 0.9);
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+        
+        .legend-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #2d3748;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        
+        .legend-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 12px;
+            margin-bottom: 15px;
+        }
+        
+        .metric-card {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 12px;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        
+        .metric-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            border-color: #553c9a;
+        }
+        
+        .metric-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+        
+        .metric-icon {
+            font-size: 1.2rem;
+            margin-right: 8px;
+        }
+        
+        .metric-legend-name {
+            font-weight: 700;
+            color: #553c9a;
+            font-size: 0.9rem;
+        }
+        
+        .metric-description {
+            color: #4a5568;
+            font-size: 0.8rem;
+            line-height: 1.4;
+            margin-bottom: 8px;
+        }
+        
+        .metric-link {
+            display: inline-block;
+            color: #553c9a;
+            text-decoration: none;
+            font-size: 0.75rem;
+            font-weight: 600;
+            padding: 4px 8px;
+            background: #edf2f7;
+            border-radius: 4px;
+            transition: background-color 0.2s ease;
+        }
+        
+        .metric-link:hover {
+            background: #e2e8f0;
+            text-decoration: underline;
+        }
+        
+        .quick-reference {
+            background: #f0fff4;
+            border: 2px solid #68d391;
+            border-radius: 8px;
+            padding: 12px;
+        }
+        
+        .reference-title {
+            font-weight: 700;
+            color: #2f855a;
+            font-size: 0.9rem;
+            margin-bottom: 8px;
+        }
+        
+        .reference-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 8px;
+        }
+        
+        .reference-item {
+            color: #2f855a;
+            font-size: 0.8rem;
+            line-height: 1.3;
+        }
+        
+        /* New styles for use cases and requirements */
+        .use-cases-section {
+            background: #f0f9ff;
+            border: 1px solid #bae6fd;
+            border-radius: 6px;
+            padding: 8px;
+            margin: 8px 0;
+        }
+        
+        .use-cases-title {
+            font-weight: 700;
+            color: #0369a1;
+            font-size: 0.8rem;
+            margin-bottom: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+        
+        .use-cases-list {
+            margin: 0;
+            padding-left: 12px;
+            font-size: 0.75rem;
+            line-height: 1.3;
+        }
+        
+        .use-cases-list li {
+            margin-bottom: 3px;
+            color: #0c4a6e;
+        }
+        
+        .approval-requirements {
+            background: #fef3c7;
+            border: 1px solid #f59e0b;
+            border-radius: 6px;
+            padding: 8px;
+            margin: 8px 0;
+        }
+        
+        .approval-title {
+            font-weight: 700;
+            color: #92400e;
+            font-size: 0.8rem;
+            margin-bottom: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+        
+        .approval-list {
+            margin: 0;
+            padding-left: 12px;
+            font-size: 0.75rem;
+            line-height: 1.3;
+        }
+        
+        .approval-list li {
+            margin-bottom: 2px;
+            color: #78350f;
+        }
+        
+        .requirements-section {
+            background: #f3e8ff;
+            border: 1px solid #c084fc;
+            border-radius: 6px;
+            padding: 8px;
+            margin: 8px 0;
+        }
+        
+        .requirements-title {
+            font-weight: 700;
+            color: #7c3aed;
+            font-size: 0.8rem;
+            margin-bottom: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+        
+        .requirements-list {
+            margin: 0;
+            padding-left: 12px;
+            font-size: 0.75rem;
+            line-height: 1.3;
+        }
+        
+        .requirements-list li {
+            margin-bottom: 2px;
+            color: #581c87;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>LLM Risk Assessment & RAGAS Evaluation Rubric</h1>
+        
+        <!-- RAGAS Metrics Legend -->
+        <div class="legend-container">
+            <h2 class="legend-title">📖 RAGAS Metrics Dictionary</h2>
+            <div class="legend-grid">
+                <div class="metric-card">
+                    <div class="metric-header">
+                        <span class="metric-icon">🎯</span>
+                        <span class="metric-legend-name">Answer Correctness</span>
+                    </div>
+                    <div class="metric-description">
+                        Measures factual accuracy by comparing generated answers to ground truth using semantic similarity and factual overlap.
+                    </div>
+                    <a href="https://docs.ragas.io/en/stable/concepts/metrics/answer_correctness/" class="metric-link" target="_blank">📚 Documentation</a>
+                </div>
+                
+                <div class="metric-card">
+                    <div class="metric-header">
+                        <span class="metric-icon">🔗</span>
+                        <span class="metric-legend-name">Faithfulness</span>
+                    </div>
+                    <div class="metric-description">
+                        Evaluates if the answer is grounded in the given context. Measures hallucination by checking if claims can be inferred from context.
+                    </div>
+                    <a href="https://docs.ragas.io/en/stable/concepts/metrics/faithfulness/" class="metric-link" target="_blank">📚 Documentation</a>
+                </div>
+                
+                <div class="metric-card">
+                    <div class="metric-header">
+                        <span class="metric-icon">💡</span>
+                        <span class="metric-legend-name">Answer Relevancy</span>
+                    </div>
+                    <div class="metric-description">
+                        Assesses how pertinent the generated answer is to the given prompt. Penalizes incomplete or redundant answers.
+                    </div>
+                    <a href="https://docs.ragas.io/en/stable/concepts/metrics/answer_relevance/" class="metric-link" target="_blank">📚 Documentation</a>
+                </div>
+                
+                <div class="metric-card">
+                    <div class="metric-header">
+                        <span class="metric-icon">🔍</span>
+                        <span class="metric-legend-name">Context Precision</span>
+                    </div>
+                    <div class="metric-description">
+                        Measures if all relevant items in the retrieved context are ranked higher than irrelevant ones. Higher precision = better ranking.
+                    </div>
+                    <a href="https://docs.ragas.io/en/stable/concepts/metrics/context_precision/" class="metric-link" target="_blank">📚 Documentation</a>
+                </div>
+                
+                <div class="metric-card">
+                    <div class="metric-header">
+                        <span class="metric-icon">📋</span>
+                        <span class="metric-legend-name">Context Recall</span>
+                    </div>
+                    <div class="metric-description">
+                        Measures extent to which the retrieved context aligns with the annotated answer. Can the ground truth be attributed to the context?
+                    </div>
+                    <a href="https://docs.ragas.io/en/stable/concepts/metrics/context_recall/" class="metric-link" target="_blank">📚 Documentation</a>
+                </div>
+                
+                <div class="metric-card">
+                    <div class="metric-header">
+                        <span class="metric-icon">⚖️</span>
+                        <span class="metric-legend-name">Context Relevancy</span>
+                    </div>
+                    <div class="metric-description">
+                        Gauges relevancy of retrieved context to the question. Identifies and penalizes inclusion of redundant information.
+                    </div>
+                    <a href="https://docs.ragas.io/en/stable/concepts/metrics/context_relevancy/" class="metric-link" target="_blank">📚 Documentation</a>
+                </div>
+            </div>
+            
+            <div class="quick-reference">
+                <div class="reference-title">🚀 Quick Reference</div>
+                <div class="reference-content">
+                    <div class="reference-item">
+                        <strong>Generation Quality:</strong> Answer Correctness, Faithfulness, Answer Relevancy
+                    </div>
+                    <div class="reference-item">
+                        <strong>Retrieval Quality:</strong> Context Precision, Context Recall, Context Relevancy
+                    </div>
+                    <div class="reference-item">
+                        <strong>Score Range:</strong> All metrics range from 0.0 to 1.0 (higher is better)
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="matrix">
+            <!-- Corner cell -->
+            <div class="cell header corner"></div>
+            
+            <!-- Column headers -->
+            <div class="cell header">
+                <div>Structured Outputs</div>
+                <div style="font-size: 0.8rem; font-weight: 400; margin-top: 4px;">Scores, Classifications, Decisions</div>
+            </div>
+            <div class="cell header">
+                <div>Unstructured Outputs</div>
+                <div style="font-size: 0.8rem; font-weight: 400; margin-top: 4px;">Text, Summaries, Conversations</div>
+            </div>
+            
+            <!-- Row 1 -->
+            <div class="cell axis-label">
+                <div>
+                    <div>Customer-Facing</div>
+                    <div style="font-size: 0.75rem; font-weight: 400; margin-top: 4px;">External Impact</div>
+                </div>
+            </div>
+            <div class="cell content">
+                <div class="risk-level risk-critical">🔴 CRITICAL RISK</div>
+                <div class="use-case">Customer-Facing Structured Decisions</div>
+                
+                <div class="use-cases-section">
+                    <div class="use-cases-title">Concrete Use Cases</div>
+                    <ul class="use-cases-list">
+                        <li><strong>Credit Scoring:</strong> Auto loan, mortgage, credit card approvals</li>
+                        <li><strong>Fraud Detection:</strong> Real-time transaction blocking/flagging</li>
+                        <li><strong>Investment Risk:</strong> Portfolio risk classification, trading limits</li>
+                        <li><strong>Insurance Underwriting:</strong> Premium calculation, coverage decisions</li>
+                        <li><strong>Loan Pricing:</strong> Interest rate determination, fee calculation</li>
+                    </ul>
+                </div>
+                
+                <div class="approval-requirements">
+                    <div class="approval-title">🔐 Required Approvals</div>
+                    <ul class="approval-list">
+                        <li>Chief Risk Officer sign-off</li>
+                        <li>Legal/Compliance review</li>
+                        <li>Model Risk Management approval</li>
+                        <li>Board-level governance committee</li>
+                        <li>Regulatory pre-notification (if required)</li>
+                    </ul>
+                </div>
+                
+                <div class="ragas-metrics">
+                    <div class="ragas-title">Primary RAGAS Metrics</div>
+                    <div class="metric-item">
+                        <span class="metric-name">Answer Correctness</span>
+                        <span class="metric-threshold">>0.95</span>
+                    </div>
+                    <div class="metric-item">
+                        <span class="metric-name">Faithfulness</span>
+                        <span class="metric-threshold">>0.98</span>
+                    </div>
+                    <div class="metric-item">
+                        <span class="metric-name">Context Precision</span>
+                        <span class="metric-threshold">>0.90</span>
+                    </div>
+                </div>
+                
+                <div class="requirements-section">
+                    <div class="requirements-title">📋 Implementation Requirements</div>
+                    <ul class="requirements-list">
+                        <li>Model explainability documentation</li>
+                        <li>Bias testing across protected classes</li>
+                        <li>Shadow mode testing (6+ months)</li>
+                        <li>Regulatory impact assessment</li>
+                        <li>Disaster recovery plan</li>
+                        <li>Human override capabilities</li>
+                    </ul>
+                </div>
+                
+                <div class="monitoring-freq">📊 Monitor: Real-time + Hourly Reports</div>
+            </div>
+            <div class="cell content">
+                <div class="risk-level risk-high">🟠 HIGH RISK</div>
+                <div class="use-case">Customer-Facing Conversational AI</div>
+                
+                <div class="use-cases-section">
+                    <div class="use-cases-title">Concrete Use Cases</div>
+                    <ul class="use-cases-list">
+                        <li><strong>Customer Service Chat:</strong> Account inquiries, transaction disputes</li>
+                        <li><strong>Financial Advisory:</strong> Investment guidance, retirement planning</li>
+                        <li><strong>Product Recommendations:</strong> Credit cards, loans, investment products</li>
+                        <li><strong>Complaint Resolution:</strong> Issue investigation, resolution pathways</li>
+                        <li><strong>Financial Education:</strong> Explaining products, terms, processes</li>
+                    </ul>
+                </div>
+                
+                <div class="approval-requirements">
+                    <div class="approval-title">🔐 Required Approvals</div>
+                    <ul class="approval-list">
+                        <li>Customer Experience Officer approval</li>
+                        <li>Legal/Compliance review</li>
+                        <li>Brand/Marketing sign-off</li>
+                        <li>Risk Committee approval</li>
+                        <li>Customer advocacy review</li>
+                    </ul>
+                </div>
+                
+                <div class="ragas-metrics">
+                    <div class="ragas-title">Primary RAGAS Metrics</div>
+                    <div class="metric-item">
+                        <span class="metric-name">Answer Relevancy</span>
+                        <span class="metric-threshold">>0.85</span>
+                    </div>
+                    <div class="metric-item">
+                        <span class="metric-name">Faithfulness</span>
+                        <span class="metric-threshold">>0.90</span>
+                    </div>
+                    <div class="metric-item">
+                        <span class="metric-name">Context Recall</span>
+                        <span class="metric-threshold">>0.80</span>
+                    </div>
+                    <div class="metric-item">
+                        <span class="metric-name">Answer Correctness</span>
+                        <span class="metric-threshold">>0.85</span>
+                    </div>
+                </div>
+                
+                <div class="requirements-section">
+                    <div class="requirements-title">📋 Implementation Requirements</div>
+                    <ul class="requirements-list">
+                        <li>Human escalation workflows</li>
+                        <li>Conversation logging & audit trails</li>
+                        <li>Customer consent mechanisms</li>
+                        <li>Brand voice & tone guidelines</li>
+                        <li>Multi-language support plan</li>
+                        <li>Privacy protection protocols</li>
+                    </ul>
+                </div>
+                
+                <div class="monitoring-freq">📊 Monitor: Every 4 Hours + Daily Analysis</div>
+            </div>
+            
+            <!-- Row 2 -->
+            <div class="cell axis-label">
+                <div>
+                    <div>Internal Operations</div>
+                    <div style="font-size: 0.75rem; font-weight: 400; margin-top: 4px;">Internal Efficiency</div>
+                </div>
+            </div>
+            <div class="cell content">
+                <div class="risk-level risk-medium">🟡 MEDIUM RISK</div>
+                <div class="use-case">Internal Structured Processing</div>
+                
+                <div class="use-cases-section">
+                    <div class="use-cases-title">Concrete Use Cases</div>
+                    <ul class="use-cases-list">
+                        <li><strong>Document Classification:</strong> Contract types, regulatory filings</li>
+                        <li><strong>Data Extraction:</strong> KYC information, financial statements</li>
+                        <li><strong>Transaction Analysis:</strong> Pattern detection, categorization</li>
+                        <li><strong>Regulatory Reporting:</strong> Automated form completion, data validation</li>
+                        <li><strong>Operational Metrics:</strong> Performance scoring, trend analysis</li>
+                    </ul>
+                </div>
+                
+                <div class="approval-requirements">
+                    <div class="approval-title">🔐 Required Approvals</div>
+                    <ul class="approval-list">
+                        <li>Department Head approval</li>
+                        <li>IT Security review</li>
+                        <li>Data Governance Committee</li>
+                        <li>Operations Manager sign-off</li>
+                        <li>Quality Assurance validation</li>
+                    </ul>
+                </div>
+                
+                <div class="ragas-metrics">
+                    <div class="ragas-title">Primary RAGAS Metrics</div>
+                    <div class="metric-item">
+                        <span class="metric-name">Context Precision</span>
+                        <span class="metric-threshold">>0.85</span>
+                    </div>
+                    <div class="metric-item">
+                        <span class="metric-name">Context Recall</span>
+                        <span class="metric-threshold">>0.80</span>
+                    </div>
+                    <div class="metric-item">
+                        <span class="metric-name">Answer Correctness</span>
+                        <span class="metric-threshold">>0.80</span>
+                    </div>
+                </div>
+                
+                <div class="requirements-section">
+                    <div class="requirements-title">📋 Implementation Requirements</div>
+                    <ul class="requirements-list">
+                        <li>Human review sampling (10-20%)</li>
+                        <li>Data lineage documentation</li>
+                        <li>Error handling & retry logic</li>
+                        <li>Performance benchmarking</li>
+                        <li>Data quality validation rules</li>
+                        <li>Rollback procedures</li>
+                    </ul>
+                </div>
+                
+                <div class="monitoring-freq">📊 Monitor: Daily + Weekly Deep Dive</div>
+            </div>
+            <div class="cell content">
+                <div class="risk-level risk-low">🟢 LOW RISK</div>
+                <div class="use-case">Internal Content Generation</div>
+                
+                <div class="use-cases-section">
+                    <div class="use-cases-title">Concrete Use Cases</div>
+                    <ul class="use-cases-list">
+                        <li><strong>Internal Reports:</strong> Executive summaries, performance dashboards</li>
+                        <li><strong>Policy Documentation:</strong> Procedure guides, training materials</li>
+                        <li><strong>Meeting Summaries:</strong> Action items, decision records</li>
+                        <li><strong>Email Drafts:</strong> Internal communications, announcements</li>
+                        <li><strong>Research Synthesis:</strong> Market analysis, competitive intelligence</li>
+                    </ul>
+                </div>
+                
+                <div class="approval-requirements">
+                    <div class="approval-title">🔐 Required Approvals</div>
+                    <ul class="approval-list">
+                        <li>Team Lead approval</li>
+                        <li>Content review (peer)</li>
+                        <li>IT Security clearance</li>
+                        <li>Basic data governance check</li>
+                    </ul>
+                </div>
+                
+                <div class="ragas-metrics">
+                    <div class="ragas-title">Primary RAGAS Metrics</div>
+                    <div class="metric-item">
+                        <span class="metric-name">Faithfulness</span>
+                        <span class="metric-threshold">>0.85</span>
+                    </div>
+                    <div class="metric-item">
+                        <span class="metric-name">Answer Relevancy</span>
+                        <span class="metric-threshold">>0.75</span>
+                    </div>
+                    <div class="metric-item">
+                        <span class="metric-name">Context Recall</span>
+                        <span class="metric-threshold">>0.70</span>
+                    </div>
+                </div>
+                
+                <div class="requirements-section">
+                    <div class="requirements-title">📋 Implementation Requirements</div>
+                    <ul class="requirements-list">
+                        <li>Human review before publication</li>
+                        <li>Version control & tracking</li>
+                        <li>Content templates & guidelines</li>
+                        <li>User feedback collection</li>
+                        <li>Periodic accuracy spot-checks</li>
+                        <li>Usage analytics tracking</li>
+                    </ul>
+                </div>
+                
+                <div class="monitoring-freq">📊 Monitor: Weekly + Monthly Reviews</div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
