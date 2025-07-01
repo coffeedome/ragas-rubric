@@ -32,6 +32,142 @@
             font-size: 1.8rem;
             font-weight: 700;
         }
+
+        /* Risk Matrix Styles */
+        .risk-matrix-container {
+            background: rgba(255, 255, 255, 0.9);
+            border: 2px solid #e2e8f0;
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 25px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .risk-matrix-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #2d3748;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .risk-matrix {
+            display: grid;
+            grid-template-columns: 80px 1fr 1fr;
+            grid-template-rows: 60px 1fr 1fr;
+            gap: 2px;
+            max-width: 500px;
+            margin: 0 auto 20px auto;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .matrix-cell {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 8px;
+            font-weight: 600;
+            font-size: 0.75rem;
+            text-align: center;
+            min-height: 50px;
+            transition: transform 0.2s ease;
+            line-height: 1.2;
+        }
+
+        .matrix-cell:hover {
+            transform: scale(1.05);
+            z-index: 10;
+        }
+
+        .matrix-corner {
+            background: linear-gradient(135deg, #718096, #4a5568);
+            color: white;
+        }
+
+        .matrix-header {
+            background: linear-gradient(135deg, #4299e1, #3182ce);
+            color: white;
+            writing-mode: horizontal-tb;
+        }
+
+        .matrix-label {
+            background: linear-gradient(135deg, #48bb78, #38a169);
+            color: white;
+            writing-mode: vertical-rl;
+            text-orientation: mixed;
+        }
+
+        /* Risk level colors - rainbow from low to high */
+        .matrix-low-low {
+            background: linear-gradient(135deg, #68d391, #48bb78);
+            color: white;
+            border: 2px solid #38a169;
+        }
+
+        .matrix-low-high {
+            background: linear-gradient(135deg, #fbb862, #f6ad55);
+            color: white;
+            border: 2px solid #dd6b20;
+        }
+
+        .matrix-high-low {
+            background: linear-gradient(135deg, #f6ad55, #ed8936);
+            color: white;
+            border: 2px solid #c05621;
+        }
+
+        .matrix-high-high {
+            background: linear-gradient(135deg, #fc8181, #e53e3e);
+            color: white;
+            border: 2px solid #c53030;
+        }
+
+        .matrix-legend {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 12px;
+            margin-top: 15px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .legend-low {
+            background: linear-gradient(135deg, #c6f6d5, #9ae6b4);
+            color: #2f855a;
+            border: 1px solid #68d391;
+        }
+
+        .legend-medium {
+            background: linear-gradient(135deg, #fed7aa, #fbb862);
+            color: #c05621;
+            border: 1px solid #f6ad55;
+        }
+
+        .legend-high {
+            background: linear-gradient(135deg, #fbb862, #f6ad55);
+            color: #c05621;
+            border: 1px solid #ed8936;
+        }
+
+        .legend-critical {
+            background: linear-gradient(135deg, #fed7d7, #fc8181);
+            color: #c53030;
+            border: 1px solid #e53e3e;
+        }
+
+        .legend-icon {
+            margin-right: 8px;
+            font-size: 1.1rem;
+        }
         
         .matrix {
             display: grid;
@@ -411,6 +547,126 @@
     <div class="container">
         <h1>LLM Risk Assessment & RAGAS Evaluation Rubric</h1>
         
+        <!-- Risk Matrix Visualization -->
+        <div class="risk-matrix-container">
+            <h2 class="risk-matrix-title">🎯 Comprehensive Banking Risk Assessment Matrix</h2>
+            
+            <!-- Impact Categories -->
+            <div style="margin-bottom: 20px;">
+                <h3 style="font-size: 1.1rem; color: #2d3748; margin-bottom: 10px;">📊 Impact Dimensions</h3>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 10px; margin-bottom: 15px;">
+                    <div style="background: #fef5e7; border: 1px solid #f6ad55; border-radius: 6px; padding: 8px; font-size: 0.8rem;">
+                        <strong>Financial Impact:</strong> P&L effect, capital requirements, liquidity risk, market risk
+                    </div>
+                    <div style="background: #f0fff4; border: 1px solid #68d391; border-radius: 6px; padding: 8px; font-size: 0.8rem;">
+                        <strong>Regulatory Impact:</strong> Compliance violations, audit findings, regulatory penalties
+                    </div>
+                    <div style="background: #e6fffa; border: 1px solid #4fd1c7; border-radius: 6px; padding: 8px; font-size: 0.8rem;">
+                        <strong>Operational Impact:</strong> Business continuity, system availability, process efficiency
+                    </div>
+                    <div style="background: #edf2f7; border: 1px solid #a0aec0; border-radius: 6px; padding: 8px; font-size: 0.8rem;">
+                        <strong>Reputational Impact:</strong> Brand damage, customer trust, media exposure, stakeholder confidence
+                    </div>
+                </div>
+            </div>
+
+            <!-- Risk Factors -->
+            <div style="margin-bottom: 20px;">
+                <h3 style="font-size: 1.1rem; color: #2d3748; margin-bottom: 10px;">⚠️ Risk Factors</h3>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 10px; margin-bottom: 15px;">
+                    <div style="background: #fed7d7; border: 1px solid #fc8181; border-radius: 6px; padding: 8px; font-size: 0.8rem;">
+                        <strong>Data Sensitivity:</strong> PII, financial records, trading data, credit information
+                    </div>
+                    <div style="background: #feebc8; border: 1px solid #f6ad55; border-radius: 6px; padding: 8px; font-size: 0.8rem;">
+                        <strong>Decision Criticality:</strong> Automated approvals, risk scoring, trading decisions
+                    </div>
+                    <div style="background: #e2e8f0; border: 1px solid #a0aec0; border-radius: 6px; padding: 8px; font-size: 0.8rem;">
+                        <strong>Output Variability:</strong> Structured vs unstructured, deterministic vs creative
+                    </div>
+                    <div style="background: #f0f9ff; border: 1px solid #7dd3fc; border-radius: 6px; padding: 8px; font-size: 0.8rem;">
+                        <strong>Human Oversight:</strong> Level of review, escalation paths, intervention capabilities
+                    </div>
+                </div>
+            </div>
+
+            <div class="risk-matrix" style="grid-template-columns: 90px 110px 110px 110px; grid-template-rows: 70px 90px 90px 90px; max-width: 450px; font-size: 0.75rem;">
+                <!-- Corner cell -->
+                <div class="matrix-cell matrix-corner"></div>
+                
+                <!-- Column headers (Output Complexity) -->
+                <div class="matrix-cell matrix-header" style="padding: 8px; font-size: 0.7rem;">
+                    <div><strong>LOW</strong><br><small>Binary/Scores</small></div>
+                </div>
+                <div class="matrix-cell matrix-header" style="padding: 8px; font-size: 0.7rem;">
+                    <div><strong>MEDIUM</strong><br><small>Structured</small></div>
+                </div>
+                <div class="matrix-cell matrix-header" style="padding: 8px; font-size: 0.7rem;">
+                    <div><strong>HIGH</strong><br><small>Unstructured</small></div>
+                </div>
+                
+                <!-- Row 1: Customer-Facing Operations -->
+                <div class="matrix-cell matrix-label" style="padding: 6px; font-size: 0.7rem;">
+                    <div><strong>CUSTOMER</strong><br><small>External Impact</small></div>
+                </div>
+                <div class="matrix-cell matrix-high-low" style="padding: 6px;">
+                    <div><strong>🔴 CRITICAL</strong><br><small>Credit Scoring<br>Fraud Detection</small></div>
+                </div>
+                <div class="matrix-cell matrix-high-high" style="padding: 6px;">
+                    <div><strong>🟠 HIGH</strong><br><small>Account Reports<br>Product Recs</small></div>
+                </div>
+                <div class="matrix-cell matrix-high-high" style="padding: 6px;">
+                    <div><strong>🟠 HIGH</strong><br><small>Customer Chat<br>Financial Advice</small></div>
+                </div>
+                
+                <!-- Row 2: Regulatory & Compliance -->
+                <div class="matrix-cell matrix-label" style="padding: 6px; font-size: 0.7rem;">
+                    <div><strong>REGULATORY</strong><br><small>Compliance</small></div>
+                </div>
+                <div class="matrix-cell matrix-high-low" style="padding: 6px;">
+                    <div><strong>🟠 HIGH</strong><br><small>AML Screening<br>KYC Scoring</small></div>
+                </div>
+                <div class="matrix-cell matrix-high-high" style="padding: 6px;">
+                    <div><strong>🟠 HIGH</strong><br><small>Reg Filings<br>Audit Reports</small></div>
+                </div>
+                <div class="matrix-cell matrix-high-high" style="padding: 6px;">
+                    <div><strong>🟡 MEDIUM</strong><br><small>Policy Docs<br>Training</small></div>
+                </div>
+                
+                <!-- Row 3: Internal Operations -->
+                <div class="matrix-cell matrix-label" style="padding: 6px; font-size: 0.7rem;">
+                    <div><strong>INTERNAL</strong><br><small>Operations</small></div>
+                </div>
+                <div class="matrix-cell matrix-low-low" style="padding: 6px;">
+                    <div><strong>🟡 MEDIUM</strong><br><small>Doc Classification<br>Data Extraction</small></div>
+                </div>
+                <div class="matrix-cell matrix-low-high" style="padding: 6px;">
+                    <div><strong>🟡 MEDIUM</strong><br><small>Internal Reports<br>Data Analysis</small></div>
+                </div>
+                <div class="matrix-cell matrix-low-high" style="padding: 6px;">
+                    <div><strong>🟢 LOW</strong><br><small>Meeting Notes<br>Internal Comms</small></div>
+                </div>
+            </div>
+            
+            <div class="matrix-legend" style="grid-template-columns: 1fr 1fr; gap: 8px;">
+                <div class="legend-item legend-critical" style="padding: 6px 8px; font-size: 0.75rem;">
+                    <span class="legend-icon">🔴</span>
+                    <div><strong>CRITICAL:</strong> Customer decisions, regulatory implications</div>
+                </div>
+                <div class="legend-item legend-high" style="padding: 6px 8px; font-size: 0.75rem;">
+                    <span class="legend-icon">🟠</span>
+                    <div><strong>HIGH:</strong> Significant impact, extensive oversight needed</div>
+                </div>
+                <div class="legend-item legend-medium" style="padding: 6px 8px; font-size: 0.75rem;">
+                    <span class="legend-icon">🟡</span>
+                    <div><strong>MEDIUM:</strong> Operational impact, standard governance</div>
+                </div>
+                <div class="legend-item legend-low" style="padding: 6px 8px; font-size: 0.75rem;">
+                    <span class="legend-icon">🟢</span>
+                    <div><strong>LOW:</strong> Internal use, standard monitoring</div>
+                </div>
+            </div>
+        </div>
+        
         <!-- RAGAS Metrics Legend -->
         <div class="legend-container">
             <h2 class="legend-title">📖 RAGAS Metrics Dictionary</h2>
@@ -521,7 +777,7 @@
             </div>
             <div class="cell content">
                 <div class="risk-level risk-critical">🔴 CRITICAL RISK</div>
-                <div class="use-case">Customer-Facing Structured Decisions</div>
+                <div class="use-case">High-Stakes Financial Decisions</div>
                 
                 <div class="use-cases-section">
                     <div class="use-cases-title">Concrete Use Cases</div>
@@ -529,8 +785,9 @@
                         <li><strong>Credit Scoring:</strong> Auto loan, mortgage, credit card approvals</li>
                         <li><strong>Fraud Detection:</strong> Real-time transaction blocking/flagging</li>
                         <li><strong>Investment Risk:</strong> Portfolio risk classification, trading limits</li>
-                        <li><strong>Insurance Underwriting:</strong> Premium calculation, coverage decisions</li>
                         <li><strong>Loan Pricing:</strong> Interest rate determination, fee calculation</li>
+                        <li><strong>AML/KYC Scoring:</strong> Anti-money laundering risk assessment</li>
+                        <li><strong>Treasury Operations:</strong> Liquidity management, capital allocation</li>
                     </ul>
                 </div>
                 
@@ -577,16 +834,18 @@
             </div>
             <div class="cell content">
                 <div class="risk-level risk-high">🟠 HIGH RISK</div>
-                <div class="use-case">Customer-Facing Conversational AI</div>
+                <div class="use-case">Customer Communications & Analysis</div>
                 
                 <div class="use-cases-section">
                     <div class="use-cases-title">Concrete Use Cases</div>
                     <ul class="use-cases-list">
                         <li><strong>Customer Service Chat:</strong> Account inquiries, transaction disputes</li>
                         <li><strong>Financial Advisory:</strong> Investment guidance, retirement planning</li>
+                        <li><strong>Account Summaries:</strong> Transaction categorization, spending analysis</li>
                         <li><strong>Product Recommendations:</strong> Credit cards, loans, investment products</li>
                         <li><strong>Complaint Resolution:</strong> Issue investigation, resolution pathways</li>
                         <li><strong>Financial Education:</strong> Explaining products, terms, processes</li>
+                        <li><strong>Market Analysis:</strong> Economic insights, portfolio reporting</li>
                     </ul>
                 </div>
                 
@@ -619,142 +878,4 @@
                         <span class="metric-name">Answer Correctness</span>
                         <span class="metric-threshold">>0.85</span>
                     </div>
-                </div>
                 
-                <div class="requirements-section">
-                    <div class="requirements-title">📋 Implementation Requirements</div>
-                    <ul class="requirements-list">
-                        <li>Human escalation workflows</li>
-                        <li>Conversation logging & audit trails</li>
-                        <li>Customer consent mechanisms</li>
-                        <li>Brand voice & tone guidelines</li>
-                        <li>Multi-language support plan</li>
-                        <li>Privacy protection protocols</li>
-                    </ul>
-                </div>
-                
-                <div class="monitoring-freq">📊 Monitor: Every 4 Hours + Daily Analysis</div>
-            </div>
-            
-            <!-- Row 2 -->
-            <div class="cell axis-label">
-                <div>
-                    <div>Internal Operations</div>
-                    <div style="font-size: 0.75rem; font-weight: 400; margin-top: 4px;">Internal Efficiency</div>
-                </div>
-            </div>
-            <div class="cell content">
-                <div class="risk-level risk-medium">🟡 MEDIUM RISK</div>
-                <div class="use-case">Internal Structured Processing</div>
-                
-                <div class="use-cases-section">
-                    <div class="use-cases-title">Concrete Use Cases</div>
-                    <ul class="use-cases-list">
-                        <li><strong>Document Classification:</strong> Contract types, regulatory filings</li>
-                        <li><strong>Data Extraction:</strong> KYC information, financial statements</li>
-                        <li><strong>Transaction Analysis:</strong> Pattern detection, categorization</li>
-                        <li><strong>Regulatory Reporting:</strong> Automated form completion, data validation</li>
-                        <li><strong>Operational Metrics:</strong> Performance scoring, trend analysis</li>
-                    </ul>
-                </div>
-                
-                <div class="approval-requirements">
-                    <div class="approval-title">🔐 Required Approvals</div>
-                    <ul class="approval-list">
-                        <li>Department Head approval</li>
-                        <li>IT Security review</li>
-                        <li>Data Governance Committee</li>
-                        <li>Operations Manager sign-off</li>
-                        <li>Quality Assurance validation</li>
-                    </ul>
-                </div>
-                
-                <div class="ragas-metrics">
-                    <div class="ragas-title">Primary RAGAS Metrics</div>
-                    <div class="metric-item">
-                        <span class="metric-name">Context Precision</span>
-                        <span class="metric-threshold">>0.85</span>
-                    </div>
-                    <div class="metric-item">
-                        <span class="metric-name">Context Recall</span>
-                        <span class="metric-threshold">>0.80</span>
-                    </div>
-                    <div class="metric-item">
-                        <span class="metric-name">Answer Correctness</span>
-                        <span class="metric-threshold">>0.80</span>
-                    </div>
-                </div>
-                
-                <div class="requirements-section">
-                    <div class="requirements-title">📋 Implementation Requirements</div>
-                    <ul class="requirements-list">
-                        <li>Human review sampling (10-20%)</li>
-                        <li>Data lineage documentation</li>
-                        <li>Error handling & retry logic</li>
-                        <li>Performance benchmarking</li>
-                        <li>Data quality validation rules</li>
-                        <li>Rollback procedures</li>
-                    </ul>
-                </div>
-                
-                <div class="monitoring-freq">📊 Monitor: Daily + Weekly Deep Dive</div>
-            </div>
-            <div class="cell content">
-                <div class="risk-level risk-low">🟢 LOW RISK</div>
-                <div class="use-case">Internal Content Generation</div>
-                
-                <div class="use-cases-section">
-                    <div class="use-cases-title">Concrete Use Cases</div>
-                    <ul class="use-cases-list">
-                        <li><strong>Internal Reports:</strong> Executive summaries, performance dashboards</li>
-                        <li><strong>Policy Documentation:</strong> Procedure guides, training materials</li>
-                        <li><strong>Meeting Summaries:</strong> Action items, decision records</li>
-                        <li><strong>Email Drafts:</strong> Internal communications, announcements</li>
-                        <li><strong>Research Synthesis:</strong> Market analysis, competitive intelligence</li>
-                    </ul>
-                </div>
-                
-                <div class="approval-requirements">
-                    <div class="approval-title">🔐 Required Approvals</div>
-                    <ul class="approval-list">
-                        <li>Team Lead approval</li>
-                        <li>Content review (peer)</li>
-                        <li>IT Security clearance</li>
-                        <li>Basic data governance check</li>
-                    </ul>
-                </div>
-                
-                <div class="ragas-metrics">
-                    <div class="ragas-title">Primary RAGAS Metrics</div>
-                    <div class="metric-item">
-                        <span class="metric-name">Faithfulness</span>
-                        <span class="metric-threshold">>0.85</span>
-                    </div>
-                    <div class="metric-item">
-                        <span class="metric-name">Answer Relevancy</span>
-                        <span class="metric-threshold">>0.75</span>
-                    </div>
-                    <div class="metric-item">
-                        <span class="metric-name">Context Recall</span>
-                        <span class="metric-threshold">>0.70</span>
-                    </div>
-                </div>
-                
-                <div class="requirements-section">
-                    <div class="requirements-title">📋 Implementation Requirements</div>
-                    <ul class="requirements-list">
-                        <li>Human review before publication</li>
-                        <li>Version control & tracking</li>
-                        <li>Content templates & guidelines</li>
-                        <li>User feedback collection</li>
-                        <li>Periodic accuracy spot-checks</li>
-                        <li>Usage analytics tracking</li>
-                    </ul>
-                </div>
-                
-                <div class="monitoring-freq">📊 Monitor: Weekly + Monthly Reviews</div>
-            </div>
-        </div>
-    </div>
-</body>
-</html>
